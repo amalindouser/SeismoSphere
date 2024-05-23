@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useContext, useEffect, useState, useRef,
+} from 'react';
 import {
   MapContainer, TileLayer, Marker, Popup,
 } from 'react-leaflet';
 import L from 'leaflet';
 import axios from 'axios';
 import { ProgressBar } from 'react-bootstrap';
+import EarthquakeContext from '../state/EarthquakeContext';
 import 'leaflet/dist/leaflet.css';
 import '../index.css'; // Import custom styles
 
@@ -21,6 +24,18 @@ const customIcon = new L.Icon({
 function EarthquakeMap() {
   const [earthquakes, setEarthquakes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { state: { selectedEarthquake } } = useContext(EarthquakeContext);
+  const mapRef = useRef();
+  const popupRefs = useRef({});
+
+  const getCoordinates = (locationString) => {
+    if (!locationString) return [0, 0];
+    const coords = locationString.split(',');
+    if (coords.length !== 2) return [0, 0];
+    const latitude = parseFloat(coords[0]);
+    const longitude = parseFloat(coords[1]);
+    return [latitude, longitude];
+  };
 
   useEffect(() => {
     const fetchEarthquakes = async () => {
@@ -44,18 +59,27 @@ function EarthquakeMap() {
     fetchEarthquakes();
   }, []);
 
-  const getCoordinates = (locationString) => {
-    if (!locationString) return [0, 0];
-    const coords = locationString.split(',');
-    if (coords.length !== 2) return [0, 0];
-    const latitude = parseFloat(coords[0]);
-    const longitude = parseFloat(coords[1]);
-    return [latitude, longitude];
-  };
+  useEffect(() => {
+    if (selectedEarthquake && mapRef.current) {
+      const coordinates = getCoordinates(selectedEarthquake.Coordinates);
+      const map = mapRef.current;
+      if (map && map.setView) {
+        map.setView(coordinates, 10, { animate: true });
 
+        const popupRef = popupRefs.current[selectedEarthquake.DateTime];
+        if (popupRef && popupRef._map) { // eslint-disable-line no-underscore-dangle
+          setTimeout(() => {
+            popupRef.openOn(map);
+          }, 0);
+        }
+      }
+    }
+  }, [selectedEarthquake]);
+
+  // Extend bounds a bit further out of Indonesia
   const indonesiaBounds = [
-    [-11, 95], // Southwest coordinates
-    [6, 141], // Northeast coordinates
+    [-15, 90], // Southwest coordinates (extended)
+    [10, 145], // Northeast coordinates (extended)
   ];
 
   return (
@@ -74,17 +98,47 @@ function EarthquakeMap() {
           className="map"
           maxBounds={indonesiaBounds}
           maxBoundsViscosity={1.0}
+          whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>
+            OpenStreetMap</a> contributors"
           />
           {earthquakes.map((gempa) => {
             const coordinates = getCoordinates(gempa.Coordinates);
             if (coordinates[0] === 0 && coordinates[1] === 0) return null;
             return (
-              <Marker key={gempa.DateTime} position={coordinates} icon={customIcon}>
-                <Popup className="custom-popup">
+              <Marker
+                key={gempa.DateTime}
+                position={coordinates}
+                icon={customIcon}
+                eventHandlers={{
+                  click: () => {
+                    if (mapRef.current && mapRef.current.setView) {
+                      mapRef.current.setView(coordinates, 10, { animate: true });
+                    }
+                  },
+                }}
+              >
+                <Popup
+                  autoPan
+                  keepInView
+                  autoPanPadding={[50, 50]}
+                  className="custom-popup"
+                  ref={(ref) => {
+                    if (ref) {
+                      popupRefs.current[gempa.DateTime] = ref;
+                      if (selectedEarthquake && selectedEarthquake.DateTime === gempa.DateTime) {
+                        setTimeout(() => {
+                          if (ref._map) { // eslint-disable-line no-underscore-dangle
+                            ref.openOn(mapRef.current);
+                          }
+                        }, 0);
+                      }
+                    }
+                  }}
+                >
                   <div className="popup-content">
                     <h4>{gempa.Wilayah}</h4>
                     <div>
