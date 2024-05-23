@@ -1,20 +1,30 @@
 import React from 'react';
 import { Route, Routes, Link } from 'react-router-dom';
-import EarthquakeTable from './components/EarthquakeTable';
-import EarthquakeMap from './components/EarthquakeMap';
+import MapPage from './pages/MapPage';
+import TablePage from './pages/TablePage';
+import './index.css'; // Import custom styles
 
 function App() {
   return (
-    <div className="container mt-4">
-      <nav>
-        <Link to="/">Daftar Gempa</Link>
-        {' '}
-        |
-        <Link to="/map">Pinpoint Gempa</Link>
+    <div className="app-container">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container">
+          <Link className="navbar-brand" to="/">Earthquake Info</Link>
+          <div className="collapse navbar-collapse">
+            <ul className="navbar-nav mr-auto">
+              <li className="nav-item">
+                <Link className="nav-link" to="/">Daftar Gempa</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/map">Pinpoint Gempa</Link>
+              </li>
+            </ul>
+          </div>
+        </div>
       </nav>
       <Routes>
-        <Route path="/" element={<EarthquakeTable />} />
-        <Route path="/map" element={<EarthquakeMap />} />
+        <Route path="/" element={<TablePage />} />
+        <Route path="/map" element={<MapPage />} />
       </Routes>
     </div>
   );
