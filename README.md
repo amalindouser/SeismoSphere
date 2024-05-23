@@ -30,26 +30,26 @@ Follow these instructions to set up and run SeismoSphere on your local machine.
 ### Installation
 
 1. **Clone the repository:**
-   \`\`\`bash
+  ```bash
    git clone https://github.com/your-username/SeismoSphere.git
    cd SeismoSphere
-   \`\`\`
+  ```
 
 2. **Install dependencies:**
-   \`\`\`bash
+  ```bash
    npm install
-   \`\`\`
+  ```
 
 3. **Run the development server:**
-   \`\`\`bash
+  ```bash
    npm run dev
-   \`\`\`
+  ```
 
 4. Open your browser and navigate to \`http://localhost:5173\`.
 
 ## Project Structure
 
-\`\`\`
+```
 SeismoSphere/
 ├── public/
 │   ├── index.html
@@ -77,7 +77,7 @@ SeismoSphere/
 ├── package.json
 ├── vite.config.js
 └── README.md
-\`\`\`
+```
 
 ## Key Files and Directories
 
