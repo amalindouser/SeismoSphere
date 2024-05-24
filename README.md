@@ -31,7 +31,7 @@ Follow these instructions to set up and run SeismoSphere on your local machine.
 
 1. **Clone the repository:**
   ```bash
-   git clone https://github.com/your-username/SeismoSphere.git
+   git clone https://github.com/Malikusfz/SeismoSphere.git
    cd SeismoSphere
   ```
 
