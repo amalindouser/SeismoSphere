@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 const EarthquakeContext = createContext();
@@ -22,8 +22,10 @@ const reducer = (state, action) => {
 export function EarthquakeProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+
   return (
-    <EarthquakeContext.Provider value={{ state, dispatch }}>
+    <EarthquakeContext.Provider value={contextValue}>
       {children}
     </EarthquakeContext.Provider>
   );
