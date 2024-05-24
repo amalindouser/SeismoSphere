@@ -6,7 +6,8 @@ import {
 } from 'react-leaflet';
 import L from 'leaflet';
 import axios from 'axios';
-import { ProgressBar } from 'react-bootstrap';
+import nprogress from 'nprogress';
+import 'nprogress/nprogress.css';
 import EarthquakeContext from '../state/EarthquakeContext';
 import 'leaflet/dist/leaflet.css';
 import '../index.css'; // Import custom styles
@@ -23,7 +24,6 @@ const customIcon = new L.Icon({
 
 function EarthquakeMap() {
   const [earthquakes, setEarthquakes] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { state: { selectedEarthquake } } = useContext(EarthquakeContext);
   const mapRef = useRef();
   const popupRefs = useRef({});
@@ -40,19 +40,19 @@ function EarthquakeMap() {
   useEffect(() => {
     const fetchEarthquakes = async () => {
       try {
+        nprogress.start();
         const cachedData = localStorage.getItem('earthquakes');
         if (cachedData) {
           setEarthquakes(JSON.parse(cachedData));
-          setLoading(false);
         } else {
           const response = await axios.get('https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.json');
           setEarthquakes(response.data.Infogempa.gempa);
           localStorage.setItem('earthquakes', JSON.stringify(response.data.Infogempa.gempa));
-          setLoading(false);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
-        setLoading(false);
+      } finally {
+        nprogress.done();
       }
     };
 
@@ -67,7 +67,7 @@ function EarthquakeMap() {
         map.setView(coordinates, 10, { animate: true });
 
         const popupRef = popupRefs.current[selectedEarthquake.DateTime];
-        if (popupRef && popupRef._map) { // eslint-disable-line no-underscore-dangle
+        if (popupRef && popupRef._map) {
           setTimeout(() => {
             popupRef.openOn(map);
           }, 0);
@@ -85,89 +85,79 @@ function EarthquakeMap() {
   return (
     <div className="earthquake-map-container">
       <h2 className="text-center mb-4">Pinpoint Gempa di Indonesia</h2>
-      {loading ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <ProgressBar animated now={100} label="Loading..." style={{ width: '50%' }} />
-        </div>
-      ) : (
-        <MapContainer
-          center={[-2.5489, 118.0149]}
-          zoom={5}
-          minZoom={5}
-          maxZoom={15}
-          className="map"
-          maxBounds={indonesiaBounds}
-          maxBoundsViscosity={1.0}
-          whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>
-            OpenStreetMap</a> contributors"
-          />
-          {earthquakes.map((gempa) => {
-            const coordinates = getCoordinates(gempa.Coordinates);
-            if (coordinates[0] === 0 && coordinates[1] === 0) return null;
-            return (
-              <Marker
-                key={gempa.DateTime}
-                position={coordinates}
-                icon={customIcon}
-                eventHandlers={{
-                  click: () => {
-                    if (mapRef.current && mapRef.current.setView) {
-                      mapRef.current.setView(coordinates, 10, { animate: true });
+      <MapContainer
+        center={[-2.5489, 118.0149]}
+        zoom={5}
+        minZoom={5}
+        maxZoom={15}
+        className="map"
+        maxBounds={indonesiaBounds}
+        maxBoundsViscosity={1.0}
+        whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>
+          OpenStreetMap</a> contributors"
+        />
+        {earthquakes.map((gempa) => {
+          const coordinates = getCoordinates(gempa.Coordinates);
+          if (coordinates[0] === 0 && coordinates[1] === 0) return null;
+          return (
+            <Marker
+              key={gempa.DateTime}
+              position={coordinates}
+              icon={customIcon}
+              eventHandlers={{
+                click: () => mapRef.current.setView(coordinates, 10, { animate: true }),
+              }}
+            >
+              <Popup
+                autoPan
+                keepInView
+                autoPanPadding={[50, 50]}
+                className="custom-popup"
+                ref={(ref) => {
+                  if (ref) {
+                    popupRefs.current[gempa.DateTime] = ref;
+                    if (selectedEarthquake && selectedEarthquake.DateTime === gempa.DateTime) {
+                      setTimeout(() => {
+                        if (ref._map) {
+                          ref.openOn(mapRef.current);
+                        }
+                      }, 0);
                     }
-                  },
+                  }
                 }}
               >
-                <Popup
-                  autoPan
-                  keepInView
-                  autoPanPadding={[50, 50]}
-                  className="custom-popup"
-                  ref={(ref) => {
-                    if (ref) {
-                      popupRefs.current[gempa.DateTime] = ref;
-                      if (selectedEarthquake && selectedEarthquake.DateTime === gempa.DateTime) {
-                        setTimeout(() => {
-                          if (ref._map) { // eslint-disable-line no-underscore-dangle
-                            ref.openOn(mapRef.current);
-                          }
-                        }, 0);
-                      }
-                    }
-                  }}
-                >
-                  <div className="popup-content">
-                    <h4>{gempa.Wilayah}</h4>
-                    <div>
-                      <strong>Tanggal:</strong>
-                      {' '}
-                      {gempa.Tanggal}
-                    </div>
-                    <div>
-                      <strong>Waktu:</strong>
-                      {' '}
-                      {gempa.Jam}
-                    </div>
-                    <div>
-                      <strong>Magnitude:</strong>
-                      {' '}
-                      {gempa.Magnitude}
-                    </div>
-                    <div>
-                      <strong>Kedalaman:</strong>
-                      {' '}
-                      {gempa.Kedalaman}
-                    </div>
+                <div className="popup-content">
+                  <h4>{gempa.Wilayah}</h4>
+                  <div>
+                    <strong>Tanggal:</strong>
+                    {' '}
+                    {gempa.Tanggal}
                   </div>
-                </Popup>
-              </Marker>
-            );
-          })}
-        </MapContainer>
-      )}
+                  <div>
+                    <strong>Waktu:</strong>
+                    {' '}
+                    {gempa.Jam}
+                  </div>
+                  <div>
+                    <strong>Magnitude:</strong>
+                    {' '}
+                    {gempa.Magnitude}
+                  </div>
+                  <div>
+                    <strong>Kedalaman:</strong>
+                    {' '}
+                    {gempa.Kedalaman}
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
     </div>
   );
 }

@@ -1,3 +1,18 @@
+/* Import default nprogress styles */
+@import 'nprogress/nprogress.css';
+
+/* Customize the nprogress bar */
+#nprogress .bar {
+  background: #29d;
+  height: 3px;
+}
+
+/* Customize the nprogress spinner */
+#nprogress .spinner-icon {
+  display: none;
+}
+
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';

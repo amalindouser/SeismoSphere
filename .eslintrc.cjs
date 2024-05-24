@@ -40,7 +40,16 @@ module.exports = {
                 minLength: 3,
             },
         ],
-        'max-len': ['off'],
+        'max-len': 'off',
         'default-param-last': 'off',
+        'no-underscore-dangle': ['error', { allow: ['_map'] }],
+        'import/no-extraneous-dependencies': [
+            'error',
+            {
+                devDependencies: ['**/*.test.js', '**/*.spec.js', '**/test/**'],
+                optionalDependencies: false,
+                peerDependencies: false,
+            },
+        ],
     },
 };
