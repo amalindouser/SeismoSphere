@@ -8,7 +8,7 @@ import nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
 import 'leaflet/dist/leaflet.css'; // Ensure Leaflet CSS is imported
 import {
-  Box, VStack, Heading, HStack, Divider, Icon, Text, Badge, Grid, GridItem,
+  Box, VStack, Heading, HStack, Icon, Text, Badge, Grid, GridItem, useColorModeValue,
 } from '@chakra-ui/react';
 import {
   FaClock, FaCalendarAlt, FaMapMarkerAlt, FaRulerVertical,
@@ -65,7 +65,6 @@ function CenterMapOnPopupOpen({ position }) {
   return null;
 }
 
-// Add prop types validation
 CenterMapOnPopupOpen.propTypes = {
   position: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
@@ -125,6 +124,9 @@ function EarthquakeMap() {
     [6, 141], // Northeast coordinates (approx)
   ];
 
+  const popupBgColor = useColorModeValue('white', 'gray.800');
+  const popupTextColor = useColorModeValue('gray.800', 'white');
+
   return (
     <Box p={4} mb={4} bg="white" borderRadius="md" boxShadow="lg" position="relative">
       <Heading as="h2" size="lg" textAlign="center" mb={4} color="gray.700">Pinpoint Gempa di Indonesia</Heading>
@@ -144,8 +146,7 @@ function EarthquakeMap() {
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>
-            OpenStreetMap</a> contributors"
+            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
           />
           {earthquakes.map((gempa) => {
             const coordinates = getCoordinates(gempa.Coordinates);
@@ -167,45 +168,44 @@ function EarthquakeMap() {
                   onOpen={() => setPopupPosition(coordinates)}
                   onClose={() => setPopupPosition(null)} // Reset the position when popup is closed
                 >
-                  <VStack align="start" spacing={2} p={2} borderRadius="md" boxShadow="md" bg="white">
-                    <Heading as="h4" size="sm" textAlign="center">{gempa.Wilayah}</Heading>
-                    <Divider />
-                    <Grid templateColumns="repeat(2, 1fr)" gap={1}>
+                  <VStack align="start" spacing={2} p={2} borderRadius="md" boxShadow="md" bg={popupBgColor} color={popupTextColor}>
+                    <Heading as="h4" size="sm" textAlign="center" mb={1}>{gempa.Wilayah}</Heading>
+                    <Grid templateColumns="repeat(2, 1fr)" gap={1} textAlign="center" ml={6}>
                       <GridItem>
-                        <HStack spacing={1}>
+                        <HStack spacing={1} justifyContent="center">
                           <Icon as={FaCalendarAlt} color="gray.500" />
                           <Text fontSize="xs">
                             <strong>Tanggal:</strong>
                           </Text>
                         </HStack>
-                        <Text fontSize="xs" ml={4}>{gempa.Tanggal}</Text>
+                        <Badge fontSize="xs">{gempa.Tanggal}</Badge>
                       </GridItem>
                       <GridItem>
-                        <HStack spacing={1}>
+                        <HStack spacing={1} justifyContent="center">
                           <Icon as={FaClock} color="gray.500" />
                           <Text fontSize="xs">
                             <strong>Waktu:</strong>
                           </Text>
                         </HStack>
-                        <Text fontSize="xs" ml={4}>{gempa.Jam}</Text>
+                        <Badge fontSize="xs">{gempa.Jam}</Badge>
                       </GridItem>
                       <GridItem>
-                        <HStack spacing={1}>
+                        <HStack spacing={1} justifyContent="center">
                           <Icon as={FaMapMarkerAlt} color="gray.500" />
                           <Text fontSize="xs">
                             <strong>Magnitude:</strong>
                           </Text>
                         </HStack>
-                        <Badge colorScheme={getBadgeColor(gempa.Magnitude)} ml={4}>{gempa.Magnitude}</Badge>
+                        <Badge colorScheme={getBadgeColor(gempa.Magnitude)}>{gempa.Magnitude}</Badge>
                       </GridItem>
                       <GridItem>
-                        <HStack spacing={1}>
+                        <HStack spacing={1} justifyContent="center">
                           <Icon as={FaRulerVertical} color="gray.500" />
                           <Text fontSize="xs">
                             <strong>Kedalaman:</strong>
                           </Text>
                         </HStack>
-                        <Text fontSize="xs" ml={4}>{gempa.Kedalaman}</Text>
+                        <Badge fontSize="xs">{gempa.Kedalaman}</Badge>
                       </GridItem>
                     </Grid>
                   </VStack>
