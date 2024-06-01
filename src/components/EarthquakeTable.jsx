@@ -1,16 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, ProgressBar } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import EarthquakeContext from '../state/EarthquakeContext';
-import { actions } from '../state/earthquake';
-import '../index.css'; // Import custom styles
+import {
+  Table, Tbody, Td, Th, Thead, Tr, Spinner, Box, Badge, HStack,
+} from '@chakra-ui/react';
+import { BsTsunami } from 'react-icons/bs';
 
 function EarthquakeTable() {
   const [earthquakes, setEarthquakes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { dispatch } = useContext(EarthquakeContext);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEarthquakes = async () => {
@@ -34,43 +31,60 @@ function EarthquakeTable() {
     fetchEarthquakes();
   }, []);
 
-  const handleRowClick = (gempa) => {
-    dispatch(actions.setSelectedEarthquake(gempa));
-    navigate('/map');
+  const getBadgeColorScheme = (magnitude) => {
+    if (magnitude >= 7) return 'red';
+    if (magnitude >= 5) return 'orange';
+    return 'green';
+  };
+
+  const colorPalette = {
+    background: '#FAFAFA',
+    secondary: '#C7EEFF',
+    highlight: '#0077C0',
+    accent: '#1D242B',
   };
 
   return (
-    <div className="earthquake-table-container">
-      <h2 className="text-center mb-4">Daftar Gempa di Indonesia</h2>
+    <Box p={4}>
+      <Box as="h2" fontSize="xl" textAlign="center" mb={4} color={colorPalette.accent}>Daftar Gempa di Indonesia</Box>
       {loading ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <ProgressBar animated now={100} label="Loading..." style={{ width: '50%' }} />
-        </div>
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <Spinner size="xl" color={colorPalette.accent} label="Loading..." />
+        </Box>
       ) : (
-        <Table responsive bordered hover className="earthquake-table">
-          <thead className="thead-dark">
-            <tr>
-              <th>Tanggal</th>
-              <th>Waktu</th>
-              <th>Magnitude</th>
-              <th>Kedalaman</th>
-              <th>Lokasi</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table variant="simple" size="sm">
+          <Thead bg={colorPalette.secondary}>
+            <Tr>
+              <Th color={colorPalette.accent}>Tanggal</Th>
+              <Th color={colorPalette.accent}>Waktu</Th>
+              <Th color={colorPalette.accent}>Magnitude</Th>
+              <Th color={colorPalette.accent}>Kedalaman</Th>
+              <Th color={colorPalette.accent}>Lokasi</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
             {earthquakes.map((gempa) => (
-              <tr key={gempa.DateTime} onClick={() => handleRowClick(gempa)}>
-                <td>{gempa.Tanggal}</td>
-                <td>{gempa.Jam}</td>
-                <td>{gempa.Magnitude}</td>
-                <td>{gempa.Kedalaman}</td>
-                <td>{gempa.Wilayah}</td>
-              </tr>
+              <Tr key={gempa.DateTime}>
+                <Td color={colorPalette.accent}>{gempa.Tanggal}</Td>
+                <Td color={colorPalette.accent}>{gempa.Jam}</Td>
+                <Td>
+                  <HStack>
+                    <Badge colorScheme={getBadgeColorScheme(gempa.Magnitude)}>
+                      {gempa.Magnitude}
+                    </Badge>
+                    {gempa.Potensi === 'Tsunami' && (
+                      <BsTsunami color={colorPalette.highlight} size="20px" />
+                    )}
+                  </HStack>
+                </Td>
+                <Td color={colorPalette.accent}>{gempa.Kedalaman}</Td>
+                <Td color={colorPalette.accent}>{gempa.Wilayah}</Td>
+              </Tr>
             ))}
-          </tbody>
+          </Tbody>
         </Table>
       )}
-    </div>
+    </Box>
   );
 }
 

@@ -1,7 +1,8 @@
-import { SET_SELECTED_EARTHQUAKE } from './earthquakeActions';
+import { SET_SELECTED_EARTHQUAKE, SET_HOVERED_EARTHQUAKE } from './earthquakeActions';
 
 const initialState = {
   selectedEarthquake: null,
+  hoveredEarthquake: null,
 };
 
 const earthquakeReducer = (state = initialState, action) => {
@@ -10,6 +11,11 @@ const earthquakeReducer = (state = initialState, action) => {
       return {
         ...state,
         selectedEarthquake: action.payload,
+      };
+    case SET_HOVERED_EARTHQUAKE:
+      return {
+        ...state,
+        hoveredEarthquake: action.payload,
       };
     default:
       return state;

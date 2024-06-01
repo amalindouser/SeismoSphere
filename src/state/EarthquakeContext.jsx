@@ -6,6 +6,7 @@ const EarthquakeContext = createContext();
 const initialState = {
   earthquakes: [],
   selectedEarthquake: null,
+  hoveredEarthquake: null,
 };
 
 const reducer = (state, action) => {
@@ -14,6 +15,8 @@ const reducer = (state, action) => {
       return { ...state, earthquakes: action.payload };
     case 'SET_SELECTED_EARTHQUAKE':
       return { ...state, selectedEarthquake: action.payload };
+    case 'SET_HOVERED_EARTHQUAKE':
+      return { ...state, hoveredEarthquake: action.payload };
     default:
       return state;
   }
