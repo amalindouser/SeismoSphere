@@ -120,12 +120,6 @@ function EarthquakeMap() {
     return [latitude, longitude];
   };
 
-  const getBadgeColor = (magnitude) => {
-    if (magnitude >= 7) return 'red';
-    if (magnitude >= 5) return 'orange';
-    return 'green';
-  };
-
   const indonesiaBounds = [
     [-11, 95],
     [6, 141],
@@ -200,7 +194,7 @@ function EarthquakeMap() {
                             <strong>Magnitude:</strong>
                           </Text>
                         </HStack>
-                        <Badge colorScheme={getBadgeColor(gempa.Magnitude)} variant="subtle">
+                        <Badge style={{ backgroundColor: getColor(gempa.Magnitude), color: 'white' }} variant="subtle">
                           {gempa.Magnitude}
                           {' '}
                           M
