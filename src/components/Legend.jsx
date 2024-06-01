@@ -13,11 +13,9 @@ function Legend() {
       bg="white"
       p={3}
       borderRadius="lg"
-      boxShadow="lg"
       zIndex="1000"
       width="70%"
       maxWidth="500px"
-      border="1px solid #ddd"
     >
       <HStack justify="space-between" spacing={4}>
         <Flex align="center">

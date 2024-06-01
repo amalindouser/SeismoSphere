@@ -159,53 +159,53 @@ function EarthquakeMap() {
               >
                 <Popup
                   className="custom-popup"
-                  maxWidth={300}
-                  minWidth={200}
+                  maxWidth={250}
+                  minWidth={150}
                   autoPan // Ensure the map pans to keep the popup in view
-                  autoPanPadding={L.point(100, 100)} // Add padding to the auto-pan
+                  autoPanPadding={L.point(50, 50)} // Add padding to the auto-pan
                   keepInView // Ensure the popup stays in view
                   onOpen={() => setPopupPosition(coordinates)}
                   onClose={() => setPopupPosition(null)} // Reset the position when popup is closed
                 >
-                  <VStack align="start" spacing={2}>
+                  <VStack align="start" spacing={2} p={2} borderRadius="md" boxShadow="md" bg="white">
                     <Heading as="h4" size="sm" textAlign="center">{gempa.Wilayah}</Heading>
                     <Divider />
-                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
+                    <Grid templateColumns="repeat(2, 1fr)" gap={1}>
                       <GridItem>
                         <HStack spacing={1}>
                           <Icon as={FaCalendarAlt} color="gray.500" />
-                          <Text fontSize="sm">
+                          <Text fontSize="xs">
                             <strong>Tanggal:</strong>
                           </Text>
                         </HStack>
-                        <Text fontSize="sm" ml={5}>{gempa.Tanggal}</Text>
+                        <Text fontSize="xs" ml={4}>{gempa.Tanggal}</Text>
                       </GridItem>
                       <GridItem>
                         <HStack spacing={1}>
                           <Icon as={FaClock} color="gray.500" />
-                          <Text fontSize="sm">
+                          <Text fontSize="xs">
                             <strong>Waktu:</strong>
                           </Text>
                         </HStack>
-                        <Text fontSize="sm" ml={5}>{gempa.Jam}</Text>
+                        <Text fontSize="xs" ml={4}>{gempa.Jam}</Text>
                       </GridItem>
                       <GridItem>
                         <HStack spacing={1}>
                           <Icon as={FaMapMarkerAlt} color="gray.500" />
-                          <Text fontSize="sm">
+                          <Text fontSize="xs">
                             <strong>Magnitude:</strong>
                           </Text>
                         </HStack>
-                        <Badge colorScheme={getBadgeColor(gempa.Magnitude)} ml={5}>{gempa.Magnitude}</Badge>
+                        <Badge colorScheme={getBadgeColor(gempa.Magnitude)} ml={4}>{gempa.Magnitude}</Badge>
                       </GridItem>
                       <GridItem>
                         <HStack spacing={1}>
                           <Icon as={FaRulerVertical} color="gray.500" />
-                          <Text fontSize="sm">
+                          <Text fontSize="xs">
                             <strong>Kedalaman:</strong>
                           </Text>
                         </HStack>
-                        <Text fontSize="sm" ml={5}>{gempa.Kedalaman}</Text>
+                        <Text fontSize="xs" ml={4}>{gempa.Kedalaman}</Text>
                       </GridItem>
                     </Grid>
                   </VStack>
@@ -217,8 +217,6 @@ function EarthquakeMap() {
         </MapContainer>
       </Box>
       <Legend />
-      {' '}
-      {/* Add the Legend component */}
     </Box>
   );
 }
