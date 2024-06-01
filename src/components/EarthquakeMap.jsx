@@ -8,7 +8,7 @@ import nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
 import 'leaflet/dist/leaflet.css'; // Ensure Leaflet CSS is imported
 import {
-  Box, VStack, Heading, HStack, Divider, Icon, Text, Badge,
+  Box, VStack, Heading, HStack, Divider, Icon, Text, Badge, Grid, GridItem,
 } from '@chakra-ui/react';
 import {
   FaClock, FaCalendarAlt, FaMapMarkerAlt, FaRulerVertical,
@@ -159,8 +159,8 @@ function EarthquakeMap() {
               >
                 <Popup
                   className="custom-popup"
-                  maxWidth={500}
-                  minWidth={300}
+                  maxWidth={300}
+                  minWidth={200}
                   autoPan // Ensure the map pans to keep the popup in view
                   autoPanPadding={L.point(100, 100)} // Add padding to the auto-pan
                   keepInView // Ensure the popup stays in view
@@ -168,41 +168,46 @@ function EarthquakeMap() {
                   onClose={() => setPopupPosition(null)} // Reset the position when popup is closed
                 >
                   <VStack align="start" spacing={2}>
-                    <Heading as="h4" size="sm">{gempa.Wilayah}</Heading>
+                    <Heading as="h4" size="sm" textAlign="center">{gempa.Wilayah}</Heading>
                     <Divider />
-                    <HStack spacing={2}>
-                      <Icon as={FaCalendarAlt} color="gray.500" />
-                      <Text fontSize="sm">
-                        <strong>Tanggal:</strong>
-                        {' '}
-                        {gempa.Tanggal}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={2}>
-                      <Icon as={FaClock} color="gray.500" />
-                      <Text fontSize="sm">
-                        <strong>Waktu:</strong>
-                        {' '}
-                        {gempa.Jam}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={2}>
-                      <Icon as={FaMapMarkerAlt} color="gray.500" />
-                      <Text fontSize="sm">
-                        <strong>Magnitude:</strong>
-                        <Badge colorScheme={getBadgeColor(gempa.Magnitude)} ml={1}>
-                          {gempa.Magnitude}
-                        </Badge>
-                      </Text>
-                    </HStack>
-                    <HStack spacing={2}>
-                      <Icon as={FaRulerVertical} color="gray.500" />
-                      <Text fontSize="sm">
-                        <strong>Kedalaman:</strong>
-                        {' '}
-                        {gempa.Kedalaman}
-                      </Text>
-                    </HStack>
+                    <Grid templateColumns="repeat(2, 1fr)" gap={2}>
+                      <GridItem>
+                        <HStack spacing={1}>
+                          <Icon as={FaCalendarAlt} color="gray.500" />
+                          <Text fontSize="sm">
+                            <strong>Tanggal:</strong>
+                          </Text>
+                        </HStack>
+                        <Text fontSize="sm" ml={5}>{gempa.Tanggal}</Text>
+                      </GridItem>
+                      <GridItem>
+                        <HStack spacing={1}>
+                          <Icon as={FaClock} color="gray.500" />
+                          <Text fontSize="sm">
+                            <strong>Waktu:</strong>
+                          </Text>
+                        </HStack>
+                        <Text fontSize="sm" ml={5}>{gempa.Jam}</Text>
+                      </GridItem>
+                      <GridItem>
+                        <HStack spacing={1}>
+                          <Icon as={FaMapMarkerAlt} color="gray.500" />
+                          <Text fontSize="sm">
+                            <strong>Magnitude:</strong>
+                          </Text>
+                        </HStack>
+                        <Badge colorScheme={getBadgeColor(gempa.Magnitude)} ml={5}>{gempa.Magnitude}</Badge>
+                      </GridItem>
+                      <GridItem>
+                        <HStack spacing={1}>
+                          <Icon as={FaRulerVertical} color="gray.500" />
+                          <Text fontSize="sm">
+                            <strong>Kedalaman:</strong>
+                          </Text>
+                        </HStack>
+                        <Text fontSize="sm" ml={5}>{gempa.Kedalaman}</Text>
+                      </GridItem>
+                    </Grid>
                   </VStack>
                 </Popup>
               </Marker>
