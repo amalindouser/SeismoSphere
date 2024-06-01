@@ -6,15 +6,22 @@ import L from 'leaflet';
 import axios from 'axios';
 import nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
-import 'leaflet/dist/leaflet.css'; // Ensure Leaflet CSS is imported
+import 'leaflet/dist/leaflet.css';
 import {
-  Box, VStack, Heading, HStack, Icon, Text, Badge, Grid, GridItem, useColorModeValue,
+  Box, VStack, Heading, HStack, Icon, Text, Badge, Grid, GridItem,
 } from '@chakra-ui/react';
 import {
   FaClock, FaCalendarAlt, FaMapMarkerAlt, FaRulerVertical,
 } from 'react-icons/fa';
-import PropTypes from 'prop-types'; // Import PropTypes
-import Legend from './Legend'; // Import the Legend component
+import PropTypes from 'prop-types';
+import Legend from './Legend';
+
+const colorPalette = {
+  background: '#FAFAFA',
+  secondary: '#C7EEFF',
+  highlight: '#0077C0',
+  accent: '#1D242B',
+};
 
 const getColor = (magnitude) => {
   if (magnitude >= 7) {
@@ -120,16 +127,13 @@ function EarthquakeMap() {
   };
 
   const indonesiaBounds = [
-    [-11, 95], // Southwest coordinates (approx)
-    [6, 141], // Northeast coordinates (approx)
+    [-11, 95],
+    [6, 141],
   ];
 
-  const popupBgColor = useColorModeValue('white', 'gray.800');
-  const popupTextColor = useColorModeValue('gray.800', 'white');
-
   return (
-    <Box p={4} mb={4} bg="white" borderRadius="md" boxShadow="lg" position="relative">
-      <Heading as="h2" size="lg" textAlign="center" mb={4} color="gray.700">Pinpoint Gempa di Indonesia</Heading>
+    <Box p={4} mb={4} bg={colorPalette.background} borderRadius="md" boxShadow="lg" position="relative">
+      <Heading as="h2" size="lg" textAlign="center" mb={4} color={colorPalette.accent}>Gempa Terbaru di Indonesia</Heading>
       <Box style={{
         height: '500px', width: '100%', borderRadius: '8px', overflow: 'hidden',
       }}
@@ -162,50 +166,54 @@ function EarthquakeMap() {
                   className="custom-popup"
                   maxWidth={250}
                   minWidth={150}
-                  autoPan // Ensure the map pans to keep the popup in view
-                  autoPanPadding={L.point(50, 50)} // Add padding to the auto-pan
-                  keepInView // Ensure the popup stays in view
+                  autoPan
+                  autoPanPadding={L.point(50, 50)}
+                  keepInView
                   onOpen={() => setPopupPosition(coordinates)}
-                  onClose={() => setPopupPosition(null)} // Reset the position when popup is closed
+                  onClose={() => setPopupPosition(null)}
                 >
-                  <VStack align="start" spacing={2} p={2} borderRadius="md" boxShadow="md" bg={popupBgColor} color={popupTextColor}>
+                  <VStack align="start" spacing={2} p={2} borderRadius="md" boxShadow="md" bg={colorPalette.background} color={colorPalette.accent}>
                     <Heading as="h4" size="sm" textAlign="center" mb={1}>{gempa.Wilayah}</Heading>
                     <Grid templateColumns="repeat(2, 1fr)" gap={1} textAlign="center" ml={6}>
                       <GridItem>
                         <HStack spacing={1} justifyContent="center">
-                          <Icon as={FaCalendarAlt} color="gray.500" />
+                          <Icon as={FaCalendarAlt} color={colorPalette.highlight} />
                           <Text fontSize="xs">
                             <strong>Tanggal:</strong>
                           </Text>
                         </HStack>
-                        <Badge fontSize="xs">{gempa.Tanggal}</Badge>
+                        <Badge fontSize="xs" variant="subtle" colorScheme="gray">{gempa.Tanggal}</Badge>
                       </GridItem>
                       <GridItem>
                         <HStack spacing={1} justifyContent="center">
-                          <Icon as={FaClock} color="gray.500" />
+                          <Icon as={FaClock} color={colorPalette.highlight} />
                           <Text fontSize="xs">
                             <strong>Waktu:</strong>
                           </Text>
                         </HStack>
-                        <Badge fontSize="xs">{gempa.Jam}</Badge>
+                        <Badge fontSize="xs" variant="subtle" colorScheme="gray">{gempa.Jam}</Badge>
                       </GridItem>
                       <GridItem>
                         <HStack spacing={1} justifyContent="center">
-                          <Icon as={FaMapMarkerAlt} color="gray.500" />
+                          <Icon as={FaMapMarkerAlt} color={colorPalette.highlight} />
                           <Text fontSize="xs">
                             <strong>Magnitude:</strong>
                           </Text>
                         </HStack>
-                        <Badge colorScheme={getBadgeColor(gempa.Magnitude)}>{gempa.Magnitude}</Badge>
+                        <Badge colorScheme={getBadgeColor(gempa.Magnitude)} variant="subtle">
+                          {gempa.Magnitude}
+                          {' '}
+                          M
+                        </Badge>
                       </GridItem>
                       <GridItem>
                         <HStack spacing={1} justifyContent="center">
-                          <Icon as={FaRulerVertical} color="gray.500" />
+                          <Icon as={FaRulerVertical} color={colorPalette.highlight} />
                           <Text fontSize="xs">
                             <strong>Kedalaman:</strong>
                           </Text>
                         </HStack>
-                        <Badge fontSize="xs">{gempa.Kedalaman}</Badge>
+                        <Badge fontSize="xs" variant="subtle" colorScheme="gray">{gempa.Kedalaman}</Badge>
                       </GridItem>
                     </Grid>
                   </VStack>

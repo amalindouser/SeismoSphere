@@ -11,32 +11,33 @@ function Legend() {
       left="50%"
       transform="translateX(-50%)"
       bg="white"
-      p={3}
+      p={3} // Reduced padding
       borderRadius="lg"
       zIndex="1000"
       width="70%"
       maxWidth="500px"
+
     >
-      <HStack justify="space-between" spacing={4}>
-        <Flex align="center">
+      <HStack justify="space-between" spacing={2}>
+        <Flex alignItems="center">
           <Box bg="red" w="15px" h="15px" borderRadius="50%" border="2px solid #fff" />
-          <Text fontSize="sm" ml={2}>7.0+</Text>
+          <Text fontSize="sm" ml={1} lineHeight="short" mt={3}>7.0+</Text>
         </Flex>
-        <Flex align="center">
+        <Flex alignItems="center">
           <Box bg="orange" w="15px" h="15px" borderRadius="50%" border="2px solid #fff" />
-          <Text fontSize="sm" ml={2}>6.0 - 6.9</Text>
+          <Text fontSize="sm" ml={1} lineHeight="short" mt={3}> 6.0 - 6.9</Text>
         </Flex>
-        <Flex align="center">
+        <Flex alignItems="center">
           <Box bg="yellow" w="15px" h="15px" borderRadius="50%" border="2px solid #fff" />
-          <Text fontSize="sm" ml={2}>5.5 - 5.9</Text>
+          <Text fontSize="sm" ml={1} lineHeight="short" mt={3}>5.5 - 5.9</Text>
         </Flex>
-        <Flex align="center">
+        <Flex alignItems="center">
           <Box bg="green" w="15px" h="15px" borderRadius="50%" border="2px solid #fff" />
-          <Text fontSize="sm" ml={2}>4.5 - 5.4</Text>
+          <Text fontSize="sm" ml={1} lineHeight="short" mt={3}>4.5 - 5.4</Text>
         </Flex>
-        <Flex align="center">
+        <Flex alignItems="center">
           <Box bg="blue" w="15px" h="15px" borderRadius="50%" border="2px solid #fff" />
-          <Text fontSize="sm" ml={2}>&lt; 4.5</Text>
+          <Text fontSize="sm" ml={1} lineHeight="short" mt={3}>&lt; 4.5</Text>
         </Flex>
       </HStack>
     </Box>
