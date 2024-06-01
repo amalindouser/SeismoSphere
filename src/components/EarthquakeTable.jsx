@@ -5,6 +5,19 @@ import {
 } from '@chakra-ui/react';
 import { BsTsunami } from 'react-icons/bs';
 
+const getColor = (magnitude) => {
+  if (magnitude >= 7) {
+    return 'red';
+  } if (magnitude >= 6) {
+    return 'orange';
+  } if (magnitude >= 5.5) {
+    return 'yellow';
+  } if (magnitude >= 4.5) {
+    return 'green';
+  }
+  return 'blue';
+};
+
 function EarthquakeTable() {
   const [earthquakes, setEarthquakes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +44,6 @@ function EarthquakeTable() {
     fetchEarthquakes();
   }, []);
 
-  const getBadgeColorScheme = (magnitude) => {
-    if (magnitude >= 7) return 'red';
-    if (magnitude >= 5) return 'orange';
-    return 'green';
-  };
-
   const colorPalette = {
     background: '#FAFAFA',
     secondary: '#C7EEFF',
@@ -46,7 +53,7 @@ function EarthquakeTable() {
 
   return (
     <Box p={4}>
-      <Box as="h2" fontSize="xl" textAlign="center" mb={4} color={colorPalette.accent}>Daftar Gempa di Indonesia</Box>
+
       {loading ? (
         <Box display="flex" justifyContent="center" alignItems="center">
           <Spinner size="xl" color={colorPalette.accent} label="Loading..." />
@@ -55,21 +62,21 @@ function EarthquakeTable() {
         <Table variant="simple" size="sm">
           <Thead bg={colorPalette.secondary}>
             <Tr>
-              <Th color={colorPalette.accent}>Tanggal</Th>
-              <Th color={colorPalette.accent}>Waktu</Th>
-              <Th color={colorPalette.accent}>Magnitude</Th>
-              <Th color={colorPalette.accent}>Kedalaman</Th>
-              <Th color={colorPalette.accent}>Lokasi</Th>
+              <Th color={colorPalette.accent} textAlign="center">Tanggal</Th>
+              <Th color={colorPalette.accent} textAlign="center">Waktu</Th>
+              <Th color={colorPalette.accent} textAlign="center">Magnitude</Th>
+              <Th color={colorPalette.accent} textAlign="center">Kedalaman</Th>
+              <Th color={colorPalette.accent} textAlign="center">Lokasi</Th>
             </Tr>
           </Thead>
           <Tbody>
             {earthquakes.map((gempa) => (
               <Tr key={gempa.DateTime}>
-                <Td color={colorPalette.accent}>{gempa.Tanggal}</Td>
-                <Td color={colorPalette.accent}>{gempa.Jam}</Td>
-                <Td>
-                  <HStack>
-                    <Badge colorScheme={getBadgeColorScheme(gempa.Magnitude)}>
+                <Td color={colorPalette.accent} textAlign="center">{gempa.Tanggal}</Td>
+                <Td color={colorPalette.accent} textAlign="center">{gempa.Jam}</Td>
+                <Td textAlign="center">
+                  <HStack justify="center">
+                    <Badge style={{ backgroundColor: getColor(gempa.Magnitude), color: 'white' }}>
                       {gempa.Magnitude}
                     </Badge>
                     {gempa.Potensi === 'Tsunami' && (
@@ -77,8 +84,8 @@ function EarthquakeTable() {
                     )}
                   </HStack>
                 </Td>
-                <Td color={colorPalette.accent}>{gempa.Kedalaman}</Td>
-                <Td color={colorPalette.accent}>{gempa.Wilayah}</Td>
+                <Td color={colorPalette.accent} textAlign="center">{gempa.Kedalaman}</Td>
+                <Td color={colorPalette.accent} textAlign="center">{gempa.Wilayah}</Td>
               </Tr>
             ))}
           </Tbody>
