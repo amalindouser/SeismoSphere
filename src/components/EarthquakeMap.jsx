@@ -1,41 +1,85 @@
-import React, {
-  useContext, useEffect, useState, useRef,
-} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
-  MapContainer, TileLayer, Marker, Popup,
+  MapContainer, TileLayer, Marker, Popup, useMap,
 } from 'react-leaflet';
 import L from 'leaflet';
 import axios from 'axios';
 import nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
-import EarthquakeContext from '../state/EarthquakeContext';
 import 'leaflet/dist/leaflet.css';
-import '../index.css'; // Import custom styles
+import {
+  Box, VStack, Heading, HStack, Icon, Text, Badge, Grid, GridItem,
+} from '@chakra-ui/react';
+import {
+  FaClock, FaCalendarAlt, FaMapMarkerAlt, FaRulerVertical,
+} from 'react-icons/fa';
+import PropTypes from 'prop-types';
+import Legend from './Legend';
 
-// Custom icon for pinpoint
-const customIcon = new L.Icon({
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-  shadowSize: [41, 41],
-});
+const colorPalette = {
+  background: '#FAFAFA',
+  secondary: '#C7EEFF',
+  highlight: '#0077C0',
+  accent: '#1D242B',
+};
+
+const getColor = (magnitude) => {
+  if (magnitude >= 7) {
+    return 'red';
+  } if (magnitude >= 6) {
+    return 'orange';
+  } if (magnitude >= 5.5) {
+    return 'yellow';
+  } if (magnitude >= 4.5) {
+    return 'green';
+  }
+  return 'blue';
+};
+
+const createIcon = (magnitude) => {
+  const color = getColor(magnitude);
+  return L.divIcon({
+    className: 'custom-icon',
+    html: `<div style="background-color: ${color}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white;"></div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 20],
+    popupAnchor: [0, -20],
+  });
+};
+
+function CenterMapOnPopupOpen({ position }) {
+  const map = useMap();
+  const initialCenter = [-2.5489, 118.0149];
+
+  useEffect(() => {
+    if (position) {
+      map.setView(position, map.getZoom(), {
+        animate: true,
+        pan: {
+          duration: 0.5,
+        },
+      });
+    } else {
+      map.setView(initialCenter, map.getZoom(), {
+        animate: true,
+        pan: {
+          duration: 0.5,
+        },
+      });
+    }
+  }, [position, map]);
+
+  return null;
+}
+
+CenterMapOnPopupOpen.propTypes = {
+  position: PropTypes.arrayOf(PropTypes.number).isRequired,
+};
 
 function EarthquakeMap() {
   const [earthquakes, setEarthquakes] = useState([]);
-  const { state: { selectedEarthquake } } = useContext(EarthquakeContext);
+  const [popupPosition, setPopupPosition] = useState(null);
   const mapRef = useRef();
-  const popupRefs = useRef({});
-
-  const getCoordinates = (locationString) => {
-    if (!locationString) return [0, 0];
-    const coords = locationString.split(',');
-    if (coords.length !== 2) return [0, 0];
-    const latitude = parseFloat(coords[0]);
-    const longitude = parseFloat(coords[1]);
-    return [latitude, longitude];
-  };
 
   useEffect(() => {
     const fetchEarthquakes = async () => {
@@ -60,105 +104,122 @@ function EarthquakeMap() {
   }, []);
 
   useEffect(() => {
-    if (selectedEarthquake && mapRef.current) {
-      const coordinates = getCoordinates(selectedEarthquake.Coordinates);
-      const map = mapRef.current;
-      if (map && map.setView) {
-        map.setView(coordinates, 10, { animate: true });
-
-        const popupRef = popupRefs.current[selectedEarthquake.DateTime];
-        if (popupRef && popupRef._map) {
-          setTimeout(() => {
-            popupRef.openOn(map);
-          }, 0);
-        }
-      }
+    if (mapRef.current) {
+      setTimeout(() => {
+        mapRef.current.invalidateSize();
+      }, 100);
     }
-  }, [selectedEarthquake]);
+  }, [earthquakes]);
 
-  // Extend bounds a bit further out of Indonesia
+  const getCoordinates = (locationString) => {
+    if (!locationString) return [0, 0];
+    const coords = locationString.split(',');
+    if (coords.length !== 2) return [0, 0];
+    const latitude = parseFloat(coords[0]);
+    const longitude = parseFloat(coords[1]);
+    return [latitude, longitude];
+  };
+
   const indonesiaBounds = [
-    [-15, 90], // Southwest coordinates (extended)
-    [10, 145], // Northeast coordinates (extended)
+    [-11, 95],
+    [6, 141],
   ];
 
   return (
-    <div className="earthquake-map-container">
-      <h2 className="text-center mb-4">Pinpoint Gempa di Indonesia</h2>
-      <MapContainer
-        center={[-2.5489, 118.0149]}
-        zoom={5}
-        minZoom={5}
-        maxZoom={15}
-        className="map"
-        maxBounds={indonesiaBounds}
-        maxBoundsViscosity={1.0}
-        whenCreated={(mapInstance) => { mapRef.current = mapInstance; }}
+    <Box p={4} mb={4} bg={colorPalette.background} borderRadius="md" boxShadow="lg" position="relative">
+      <Heading as="h2" size="lg" textAlign="center" mb={4} color={colorPalette.accent}>Gempa Terbaru di Indonesia</Heading>
+      <Box style={{
+        height: '500px', width: '100%', borderRadius: '8px', overflow: 'hidden',
+      }}
       >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>
-          OpenStreetMap</a> contributors"
-        />
-        {earthquakes.map((gempa) => {
-          const coordinates = getCoordinates(gempa.Coordinates);
-          if (coordinates[0] === 0 && coordinates[1] === 0) return null;
-          return (
-            <Marker
-              key={gempa.DateTime}
-              position={coordinates}
-              icon={customIcon}
-              eventHandlers={{
-                click: () => mapRef.current.setView(coordinates, 10, { animate: true }),
-              }}
-            >
-              <Popup
-                autoPan
-                keepInView
-                autoPanPadding={[50, 50]}
-                className="custom-popup"
-                ref={(ref) => {
-                  if (ref) {
-                    popupRefs.current[gempa.DateTime] = ref;
-                    if (selectedEarthquake && selectedEarthquake.DateTime === gempa.DateTime) {
-                      setTimeout(() => {
-                        if (ref._map) {
-                          ref.openOn(mapRef.current);
-                        }
-                      }, 0);
-                    }
-                  }
-                }}
+        <MapContainer
+          center={[-2.5489, 118.0149]}
+          zoom={5}
+          minZoom={5}
+          maxZoom={15}
+          style={{ height: '100%', width: '100%' }}
+          whenCreated={(mapInstance) => { mapRef.current = mapInstance; mapInstance.invalidateSize(); }}
+          maxBounds={indonesiaBounds}
+          maxBoundsViscosity={1.0}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+          />
+          {earthquakes.map((gempa) => {
+            const coordinates = getCoordinates(gempa.Coordinates);
+            if (coordinates[0] === 0 && coordinates[1] === 0) return null;
+            const icon = createIcon(gempa.Magnitude);
+            return (
+              <Marker
+                key={gempa.DateTime}
+                position={coordinates}
+                icon={icon}
               >
-                <div className="popup-content">
-                  <h4>{gempa.Wilayah}</h4>
-                  <div>
-                    <strong>Tanggal:</strong>
-                    {' '}
-                    {gempa.Tanggal}
-                  </div>
-                  <div>
-                    <strong>Waktu:</strong>
-                    {' '}
-                    {gempa.Jam}
-                  </div>
-                  <div>
-                    <strong>Magnitude:</strong>
-                    {' '}
-                    {gempa.Magnitude}
-                  </div>
-                  <div>
-                    <strong>Kedalaman:</strong>
-                    {' '}
-                    {gempa.Kedalaman}
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
-    </div>
+                <Popup
+                  className="custom-popup"
+                  maxWidth={250}
+                  minWidth={150}
+                  autoPan
+                  autoPanPadding={L.point(50, 50)}
+                  keepInView
+                  onOpen={() => setPopupPosition(coordinates)}
+                  onClose={() => setPopupPosition(null)}
+                >
+                  <VStack align="start" spacing={2} p={2} borderRadius="md" boxShadow="md" bg={colorPalette.background} color={colorPalette.accent}>
+                    <Heading as="h4" size="sm" textAlign="center" mb={1}>{gempa.Wilayah}</Heading>
+                    <Grid templateColumns="repeat(2, 1fr)" gap={1} textAlign="center" ml={6}>
+                      <GridItem>
+                        <HStack spacing={1} justifyContent="center">
+                          <Icon as={FaCalendarAlt} color={colorPalette.highlight} />
+                          <Text fontSize="xs">
+                            <strong>Tanggal:</strong>
+                          </Text>
+                        </HStack>
+                        <Badge fontSize="xs" variant="subtle" colorScheme="gray">{gempa.Tanggal}</Badge>
+                      </GridItem>
+                      <GridItem>
+                        <HStack spacing={1} justifyContent="center">
+                          <Icon as={FaClock} color={colorPalette.highlight} />
+                          <Text fontSize="xs">
+                            <strong>Waktu:</strong>
+                          </Text>
+                        </HStack>
+                        <Badge fontSize="xs" variant="subtle" colorScheme="gray">{gempa.Jam}</Badge>
+                      </GridItem>
+                      <GridItem>
+                        <HStack spacing={1} justifyContent="center">
+                          <Icon as={FaMapMarkerAlt} color={colorPalette.highlight} />
+                          <Text fontSize="xs">
+                            <strong>Magnitude:</strong>
+                          </Text>
+                        </HStack>
+                        <Badge style={{ backgroundColor: getColor(gempa.Magnitude), color: 'white' }} variant="subtle">
+                          {gempa.Magnitude}
+                          {' '}
+                          M
+                        </Badge>
+                      </GridItem>
+                      <GridItem>
+                        <HStack spacing={1} justifyContent="center">
+                          <Icon as={FaRulerVertical} color={colorPalette.highlight} />
+                          <Text fontSize="xs">
+                            <strong>Kedalaman:</strong>
+                          </Text>
+                        </HStack>
+                        <Badge fontSize="xs" variant="subtle" colorScheme="gray">{gempa.Kedalaman}</Badge>
+                      </GridItem>
+                    </Grid>
+                  </VStack>
+                </Popup>
+              </Marker>
+            );
+          })}
+          <CenterMapOnPopupOpen position={popupPosition || [-2.5489, 118.0149]} />
+        </MapContainer>
+      </Box>
+      <Legend />
+    </Box>
   );
 }
 
