@@ -8,7 +8,7 @@ import nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
 import 'leaflet/dist/leaflet.css';
 import {
-  Box, VStack, Heading, HStack, Icon, Text, Badge, Grid, GridItem, Button, Spinner,
+  Box, VStack, Heading, HStack, Icon, Text, Badge, Grid, GridItem, Button, Spinner, useToast,
 } from '@chakra-ui/react';
 import {
   FaClock, FaCalendarAlt, FaMapMarkerAlt, FaRulerVertical,
@@ -76,11 +76,83 @@ CenterMapOnPopupOpen.propTypes = {
   position: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
 
+function MapControl({ toast }) {
+  const map = useMap();
+  const [showToast, setShowToast] = useState(true);
+  const [notificationDismissed, setNotificationDismissed] = useState(false);
+
+  useEffect(() => {
+    const disableScrollZoom = () => {
+      map.scrollWheelZoom.disable();
+    };
+
+    const enableScrollZoom = () => {
+      map.scrollWheelZoom.enable();
+    };
+
+    const handleMouseWheel = (e) => {
+      if (!e.ctrlKey) {
+        disableScrollZoom();
+        if (showToast) {
+          toast({
+            title: 'Press Ctrl to Zoom',
+            description: 'Use the Ctrl key to enable zooming on the map.',
+            status: 'info',
+            duration: 3000,
+            isClosable: true,
+            position: 'top',
+            onCloseComplete: () => setNotificationDismissed(true),
+          });
+          setShowToast(false);
+          setNotificationDismissed(false);
+        }
+      } else {
+        enableScrollZoom();
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey) {
+        enableScrollZoom();
+      }
+    };
+
+    const handleKeyUp = (e) => {
+      if (!e.ctrlKey) {
+        disableScrollZoom();
+      }
+    };
+
+    map.getContainer().addEventListener('wheel', handleMouseWheel);
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      map.getContainer().removeEventListener('wheel', handleMouseWheel);
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [map, toast, showToast]);
+
+  useEffect(() => {
+    if (notificationDismissed) {
+      setShowToast(true);
+    }
+  }, [notificationDismissed]);
+
+  return null;
+}
+
+MapControl.propTypes = {
+  toast: PropTypes.func.isRequired,
+};
+
 function EarthquakeMap() {
   const [earthquakes, setEarthquakes] = useState([]);
   const [popupPosition, setPopupPosition] = useState(null);
   const [mapStyle, setMapStyle] = useState('default');
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
   const mapRef = useRef();
 
   useEffect(() => {
@@ -168,6 +240,7 @@ function EarthquakeMap() {
               url={mapTileLayers[mapStyle]}
               attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
             />
+            <MapControl toast={toast} />
             {earthquakes.map((gempa) => {
               const coordinates = getCoordinates(gempa.Coordinates);
               if (coordinates[0] === 0 && coordinates[1] === 0) return null;
