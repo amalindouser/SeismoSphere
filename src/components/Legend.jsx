@@ -11,14 +11,14 @@ function Legend() {
       left="50%"
       transform="translateX(-50%)"
       bg="white"
-      p={3} // Reduced padding
+      p={2} // Reduced padding
       borderRadius="lg"
       zIndex="1000"
       width="70%"
       maxWidth="500px"
 
     >
-      <HStack justify="space-between" spacing={2}>
+      <HStack justify="space-between" spacing={1}>
         <Flex alignItems="center">
           <Box bg="red" w="15px" h="15px" borderRadius="50%" border="2px solid #fff" />
           <Text fontSize="sm" ml={1} lineHeight="short" mt={3}>7.0+</Text>

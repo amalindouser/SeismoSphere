@@ -25,23 +25,24 @@ function EarthquakeTable() {
   useEffect(() => {
     const fetchEarthquakes = async () => {
       try {
-        const cachedData = localStorage.getItem('earthquakes');
-        if (cachedData) {
-          setEarthquakes(JSON.parse(cachedData));
-          setLoading(false);
-        } else {
-          const response = await axios.get('https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.json');
-          setEarthquakes(response.data.Infogempa.gempa);
-          localStorage.setItem('earthquakes', JSON.stringify(response.data.Infogempa.gempa));
-          setLoading(false);
-        }
+        const response = await axios.get('https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.json');
+        setEarthquakes(response.data.Infogempa.gempa);
+        localStorage.setItem('earthquakes', JSON.stringify(response.data.Infogempa.gempa));
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
       }
     };
 
+    // Fetch data on component mount
     fetchEarthquakes();
+
+    // Set an interval to fetch data periodically
+    const intervalId = setInterval(fetchEarthquakes, 60000); // Fetch every 60 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const colorPalette = {
@@ -53,7 +54,6 @@ function EarthquakeTable() {
 
   return (
     <Box p={4}>
-
       {loading ? (
         <Box display="flex" justifyContent="center" alignItems="center">
           <Spinner size="xl" color={colorPalette.accent} label="Loading..." />
