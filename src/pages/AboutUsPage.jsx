@@ -27,11 +27,11 @@ const teamMembers = [
     github: 'https://github.com/Malikusfz/',
   },
   {
-    name: 'Alice Johnson',
-    job: 'Data Scientist',
+    name: 'Bagus Viki Amalindo',
+    job: 'FrontEnd',
     photo: 'https://via.placeholder.com/150',
-    linkedin: 'https://www.linkedin.com/in/alicejohnson',
-    github: 'https://github.com/alicejohnson',
+    linkedin: 'https://www.linkedin.com/in/bagus-viki-amalindo-903966268/',
+    github: 'https://github.com/amalindouser ',
   },
 ];
 
