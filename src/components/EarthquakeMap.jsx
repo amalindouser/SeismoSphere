@@ -155,27 +155,25 @@ function EarthquakeMap() {
   const toast = useToast();
   const mapRef = useRef();
 
-  useEffect(() => {
-    const fetchEarthquakes = async () => {
-      try {
-        nprogress.start();
-        const cachedData = localStorage.getItem('earthquakes');
-        if (cachedData) {
-          setEarthquakes(JSON.parse(cachedData));
-        } else {
-          const response = await axios.get('https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.json');
-          setEarthquakes(response.data.Infogempa.gempa);
-          localStorage.setItem('earthquakes', JSON.stringify(response.data.Infogempa.gempa));
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-        nprogress.done();
-      }
-    };
+  const fetchEarthquakes = async () => {
+    try {
+      nprogress.start();
+      const response = await axios.get('https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.json');
+      setEarthquakes(response.data.Infogempa.gempa);
+      localStorage.setItem('earthquakes', JSON.stringify(response.data.Infogempa.gempa));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+      nprogress.done();
+    }
+  };
 
+  useEffect(() => {
     fetchEarthquakes();
+    const intervalId = setInterval(fetchEarthquakes, 60000); // Fetch every 60 seconds
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
