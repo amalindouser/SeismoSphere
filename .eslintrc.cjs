@@ -29,6 +29,7 @@ module.exports = {
                 lang: 'en_US',
                 skipWords: [
                     'thead', 'tbody', 'tfooter', 'gempa', 'Tanggal', 'Jam', 'Magnitude', 'Kedalaman', 'Wilayah', 'setEarthquakes', 'earthquake', 'ProgressBar',
+                    'keydown', 'keyup', 'unmount', 'Seismo', 'Poppins', 'fff', 'Rina', 'Parlina', 'jpg', 'Malikus', 'Syafaadi', 'Nurfaza', 'jpeg', '100vh', '2xl', '60vh',
                 ],
                 skipIfMatch: [
                     'http://[^s]*',

@@ -53,12 +53,15 @@ function CenterMapOnPopupOpen({ position }) {
 
   useEffect(() => {
     if (position) {
-      map.setView(position, map.getZoom(), {
-        animate: true,
-        pan: {
-          duration: 0.5,
-        },
-      });
+      const currentCenter = map.getCenter();
+      if (currentCenter.lat !== position[0] || currentCenter.lng !== position[1]) {
+        map.setView(position, map.getZoom(), {
+          animate: true,
+          pan: {
+            duration: 0.5,
+          },
+        });
+      }
     } else {
       map.setView(initialCenter, map.getZoom(), {
         animate: true,
@@ -80,6 +83,7 @@ function MapControl({ toast }) {
   const map = useMap();
   const [showToast, setShowToast] = useState(true);
   const [notificationDismissed, setNotificationDismissed] = useState(false);
+  const notificationShown = useRef(false); // Track whether the notification has been shown
 
   useEffect(() => {
     const disableScrollZoom = () => {
@@ -90,10 +94,12 @@ function MapControl({ toast }) {
       map.scrollWheelZoom.enable();
     };
 
+    disableScrollZoom(); // Initially disable scroll zoom
+
     const handleMouseWheel = (e) => {
       if (!e.ctrlKey) {
         disableScrollZoom();
-        if (showToast) {
+        if (showToast && !notificationShown.current) {
           toast({
             title: 'Press Ctrl to Zoom',
             description: 'Use the Ctrl key to enable zooming on the map.',
@@ -101,10 +107,14 @@ function MapControl({ toast }) {
             duration: 3000,
             isClosable: true,
             position: 'top',
-            onCloseComplete: () => setNotificationDismissed(true),
+            onCloseComplete: () => {
+              setShowToast(true);
+              setNotificationDismissed(true);
+              notificationShown.current = false;
+            },
           });
           setShowToast(false);
-          setNotificationDismissed(false);
+          notificationShown.current = true;
         }
       } else {
         enableScrollZoom();
@@ -152,6 +162,7 @@ function EarthquakeMap() {
   const [popupPosition, setPopupPosition] = useState(null);
   const [mapStyle, setMapStyle] = useState('default');
   const [loading, setLoading] = useState(true);
+  const [showSpinner, setShowSpinner] = useState(false);
   const toast = useToast();
   const mapRef = useRef();
 
@@ -170,10 +181,11 @@ function EarthquakeMap() {
   };
 
   useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setShowSpinner(true);
+    }, 300);
     fetchEarthquakes();
-    const intervalId = setInterval(fetchEarthquakes, 60000); // Fetch every 60 seconds
-
-    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -218,7 +230,11 @@ function EarthquakeMap() {
         View
       </Button>
       {loading ? (
-        <Spinner size="xl" color={colorPalette.highlight} thickness="4px" speed="0.65s" emptyColor="gray.200" />
+        showSpinner && (
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <Spinner size="xl" color={colorPalette.highlight} thickness="4px" speed="0.65s" emptyColor="gray.200" />
+          </Box>
+        )
       ) : (
         <Box style={{
           height: '500px', width: '100%', borderRadius: '8px', overflow: 'hidden',
@@ -230,7 +246,11 @@ function EarthquakeMap() {
             minZoom={5}
             maxZoom={15}
             style={{ height: '100%', width: '100%' }}
-            whenCreated={(mapInstance) => { mapRef.current = mapInstance; mapInstance.invalidateSize(); }}
+            whenCreated={(mapInstance) => {
+              mapRef.current = mapInstance;
+              mapInstance.invalidateSize();
+              mapInstance.scrollWheelZoom.disable(); // Disable scroll zoom initially
+            }}
             maxBounds={indonesiaBounds}
             maxBoundsViscosity={1.0}
           >
