@@ -21,7 +21,7 @@ const teamMembers = [
   },
   {
     name: 'Malikus Syafaadi Nurfaza',
-    job: 'Project Manager',
+    job: 'Project Manager / Front End',
     photo: 'src/images/Profile/Malikus.jpeg',
     linkedin: 'https://www.linkedin.com/in/malikussyafaadinurfaza/',
     github: 'https://github.com/Malikusfz/',
