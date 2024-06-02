@@ -93,8 +93,8 @@ function EarthquakeMap() {
   };
 
   const indonesiaBounds = [
-    [-15, 89], // Extend the southern and western bounds
-    [10, 147], // Extend the northern and eastern bounds
+    [-16, 87], // Extend the southern and western bounds
+    [16, 150], // Extend the northern and eastern bounds
   ];
 
   const mapTileLayers = {
