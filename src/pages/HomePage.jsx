@@ -1,12 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import EarthquakeContext from "../state/EarthquakeContext";
-import { actions } from "../state/earthquake";
-import VulkanikImg from '../assets/images/GempaVulkanik.png';
-import TektonikImg from '../assets/images/GempaTektonik.png';
-import ReruntuhanImg from '../assets/images/GempaReruntuhan.png';
-import GempaImg from '../assets/images/Gempa.png';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Card,
   CardImg,
@@ -16,7 +10,13 @@ import {
   CardGroup,
   Row,
   Col,
-} from "reactstrap";
+} from 'reactstrap';
+import EarthquakeContext from '../state/EarthquakeContext';
+import { actions } from '../state/earthquake';
+import VulkanikImg from '../images/GempaVulkanik.png';
+import TektonikImg from '../images/GempaTektonik.png';
+import ReruntuhanImg from '../images/GempaReruntuhan.png';
+import GempaImg from '../images/Gempa.png';
 
 function HomePage() {
   const [latestEarthquake, setLatestEarthquake] = useState(null);
@@ -27,22 +27,22 @@ function HomePage() {
   useEffect(() => {
     const fetchEarthquakes = async () => {
       try {
-        const cachedData = localStorage.getItem("earthquakes");
+        const cachedData = localStorage.getItem('earthquakes');
         if (cachedData) {
           const earthquakes = JSON.parse(cachedData);
           setLatestEarthquake(earthquakes[0]);
           setLoading(false);
         } else {
           const response = await axios.get(
-            "https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.json"
+            'https://data.bmkg.go.id/DataMKG/TEWS/gempadirasakan.json',
           );
           const earthquakes = response.data.Infogempa.gempa;
           setLatestEarthquake(earthquakes[0]);
-          localStorage.setItem("earthquakes", JSON.stringify(earthquakes));
+          localStorage.setItem('earthquakes', JSON.stringify(earthquakes));
           setLoading(false);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
         setLoading(false);
       }
     };
@@ -52,12 +52,12 @@ function HomePage() {
 
   const handleRowClick = (gempa) => {
     dispatch(actions.setSelectedEarthquake(gempa));
-    navigate("/map");
+    navigate('/map');
   };
 
   return (
-    <div style={{ backgroundColor: "#FAFAFA", color: "#1D242B" }}>
-      <header style={{ textAlign: "center", padding: "20px 0" }}>
+    <div style={{ backgroundColor: '#FAFAFA', color: '#1D242B' }}>
+      <header style={{ textAlign: 'center', padding: '20px 0' }}>
         <h1>SeismoSphere</h1>
         <p>Lacak Gempa Secara Real-Time dan Selalu Siaga!</p>
       </header>
@@ -65,12 +65,12 @@ function HomePage() {
         <section>
           <Row>
             <Col sm="6">
-              <Card body >
+              <Card body>
                 <CardTitle tag="h5">Gempa</CardTitle>
                 <CardImg
                   alt="Gempa"
                   src={GempaImg}
-                  style={{ width: "40%", height: "auto", margin: "0 auto" }}
+                  style={{ width: '40%', height: 'auto', margin: '0 auto' }}
                 />
                 <CardText>
                   Gempa adalah getaran permukaan bumi akibat pelepasan energi
@@ -89,19 +89,29 @@ function HomePage() {
                       <CardText
                         onClick={() => handleRowClick(latestEarthquake)}
                       >
-                        <strong>Tanggal:</strong> {latestEarthquake.Tanggal}
+                        <strong>Tanggal:</strong>
+                        {' '}
+                        {latestEarthquake.Tanggal}
                       </CardText>
                       <CardText>
-                        <strong>Waktu:</strong> {latestEarthquake.Jam}
+                        <strong>Waktu:</strong>
+                        {' '}
+                        {latestEarthquake.Jam}
                       </CardText>
                       <CardText>
-                        <strong>Magnitude:</strong> {latestEarthquake.Magnitude}
+                        <strong>Magnitude:</strong>
+                        {' '}
+                        {latestEarthquake.Magnitude}
                       </CardText>
                       <CardText>
-                        <strong>Kedalaman:</strong> {latestEarthquake.Kedalaman}
+                        <strong>Kedalaman:</strong>
+                        {' '}
+                        {latestEarthquake.Kedalaman}
                       </CardText>
                       <CardText>
-                        <strong>Wilayah:</strong> {latestEarthquake.Wilayah}
+                        <strong>Wilayah:</strong>
+                        {' '}
+                        {latestEarthquake.Wilayah}
                       </CardText>
                     </>
                   )
@@ -111,14 +121,14 @@ function HomePage() {
           </Row>
         </section>
 
-        <section style={{ padding: "20px 0", color: "#FAFAFA" }}>
+        <section style={{ padding: '20px 0', color: '#FAFAFA' }}>
           <Card className="my-2">
             <CardBody>
               <CardTitle tag="h5" align="center">
                 Jenis Jenis Gempa
               </CardTitle>
               <CardGroup>
-                <Card style={{ width: "18rem" }}>
+                <Card style={{ width: '18rem' }}>
                   <CardImg alt="Gempa Tektonik" src={TektonikImg} />
                   <CardBody>
                     <CardTitle tag="h5">Gempa Tektonik</CardTitle>
@@ -129,7 +139,7 @@ function HomePage() {
                     </CardText>
                   </CardBody>
                 </Card>
-                <Card style={{ width: "18rem" }}>
+                <Card style={{ width: '18rem' }}>
                   <CardImg alt="Gempa Vulkanik" src={VulkanikImg} />
                   <CardBody>
                     <CardTitle tag="h5">Gempa Vulkanik</CardTitle>
@@ -139,7 +149,7 @@ function HomePage() {
                     </CardText>
                   </CardBody>
                 </Card>
-                <Card style={{ width: "18rem" }}>
+                <Card style={{ width: '18rem' }}>
                   <CardImg alt="Gempa Reruntuhan" src={ReruntuhanImg} />
                   <CardBody>
                     <CardTitle tag="h5">Gempa Reruntuhan</CardTitle>

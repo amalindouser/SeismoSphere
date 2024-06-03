@@ -7,6 +7,7 @@ import './index.css';
 import HeaderNav from './components/HeaderNav';
 import AboutUsPage from './pages/AboutUsPage';
 import Footer from './components/Footer';
+import HomePage from './pages/HomePage';
 
 function App() {
   return (
@@ -15,7 +16,8 @@ function App() {
         <HeaderNav />
         <div className="app-container">
           <Routes>
-            <Route path="/" element={<MapPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/Map" element={<MapPage />} />
             <Route path="/about" element={<AboutUsPage />} />
           </Routes>
         </div>
