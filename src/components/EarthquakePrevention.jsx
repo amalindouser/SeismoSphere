@@ -1,34 +1,10 @@
 import React from 'react';
-import { Card, CardGroup, CardImg, CardBody, CardTitle, CardText, CardSubtitle, Fade } from 'react-bootstrap';
-import DropImg from '../assets/images/Drop.png';
-import CoverImg from '../assets/images/Cover.png';
-import HoldOnImg from '../assets/images/HoldOn.png';
-
-const EarthquakePrevention = () => (
-  <Fade appear={true} in={true}>
-    <Card className="my-2">
-      <Card.Body>
-        <Card.Title className="text-center">
-          Penanggulangan Gempa
-        </Card.Title>
-        <CardGroup>
-          {['Drop', 'Cover', 'Hold On'].map((action, index) => (
-            <Card key={index} style={{ width: '18rem' }}>
-              <CardImg variant="top" src={getActionImage(action)} alt={action} />
-              <CardBody>
-                <CardTitle>{action}</CardTitle>
-                <CardSubtitle className="mb-2 text-muted">
-                  {getActionSubtitle(action)}
-                </CardSubtitle>
-                <CardText>{getActionText(action)}</CardText>
-              </CardBody>
-            </Card>
-          ))}
-        </CardGroup>
-      </Card.Body>
-    </Card>
-  </Fade>
-);
+import {
+  Card, CardGroup, CardImg, CardBody, CardTitle, CardText, CardSubtitle, Fade,
+} from 'react-bootstrap';
+import DropImg from '../images/Drop.png';
+import CoverImg from '../images/Cover.png';
+import HoldOnImg from '../images/HoldOn.png';
 
 const getActionImage = (action) => {
   switch (action) {
@@ -68,5 +44,33 @@ const getActionText = (action) => {
       return '';
   }
 };
+
+function EarthquakePrevention() {
+  return (
+    <Fade appear in>
+      <Card className="my-2">
+        <Card.Body>
+          <Card.Title className="text-center">
+            Penanggulangan Gempa
+          </Card.Title>
+          <CardGroup>
+            {['Drop', 'Cover', 'Hold On'].map((action) => (
+              <Card key={action} style={{ width: '18rem' }}>
+                <CardImg variant="top" src={getActionImage(action)} alt={action} />
+                <CardBody>
+                  <CardTitle>{action}</CardTitle>
+                  <CardSubtitle className="mb-2 text-muted">
+                    {getActionSubtitle(action)}
+                  </CardSubtitle>
+                  <CardText>{getActionText(action)}</CardText>
+                </CardBody>
+              </Card>
+            ))}
+          </CardGroup>
+        </Card.Body>
+      </Card>
+    </Fade>
+  );
+}
 
 export default EarthquakePrevention;

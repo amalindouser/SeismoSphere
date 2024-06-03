@@ -38,6 +38,9 @@ function HeaderNav() {
           <Link as={RouterLink} to="/" fontWeight="bold" color={colorPalette.accent} _hover={{ color: colorPalette.highlight }}>
             Home
           </Link>
+          <Link as={RouterLink} to="/map" fontWeight="bold" color={colorPalette.accent} _hover={{ color: colorPalette.highlight }}>
+            Map
+          </Link>
           <Link as={RouterLink} to="/about" fontWeight="bold" color={colorPalette.accent} _hover={{ color: colorPalette.highlight }}>
             About Us
           </Link>
@@ -62,14 +65,11 @@ function HeaderNav() {
               <Link as={RouterLink} to="/" onClick={onClose} fontWeight="bold" color={colorPalette.accent} _hover={{ color: colorPalette.highlight }}>
                 Home
               </Link>
+              <Link as={RouterLink} to="/map" onClick={onClose} fontWeight="bold" color={colorPalette.accent} _hover={{ color: colorPalette.highlight }}>
+                Map
+              </Link>
               <Link as={RouterLink} to="/about" onClick={onClose} fontWeight="bold" color={colorPalette.accent} _hover={{ color: colorPalette.highlight }}>
                 About Us
-              </Link>
-              <Link as={RouterLink} to="/services" onClick={onClose} fontWeight="bold" color={colorPalette.accent} _hover={{ color: colorPalette.highlight }}>
-                Services
-              </Link>
-              <Link as={RouterLink} to="/contact" onClick={onClose} fontWeight="bold" color={colorPalette.accent} _hover={{ color: colorPalette.highlight }}>
-                Contact
               </Link>
             </VStack>
           </DrawerBody>
